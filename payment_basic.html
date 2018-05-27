@@ -18,7 +18,7 @@
       padding: 2em;
     }
 
-    body> :not(:first-child) {
+    body > :not(:first-child) {
       margin-top: 1.5em;
     }
 
@@ -87,11 +87,43 @@
       padding: 0.25em 1em;
       text-decoration: none;
     }
+
+    ul.nav {
+    margin:0;
+    padding:0;
+    list-style:none;
+    height:36px;
+    margin-top:20px;
+
+    font-family:Arial, Helvetica, sans-serif;
+    font-size:13px;
+    }
+
+    ul.nav li {
+    float:left;
+    }
+
+    ul.nav a {
+    display:block;
+    padding:0 28px;
+    color:#000;
+    text-decoration:none;
+    }
+
   </style>
 </head>
-
 <body>
+
   <h1>W3C Payment Request API Tutorial</h1>
+
+  <ul class="nav">
+  <li><a href="/">1. Basic</a></li>
+  <li><a href="/2">2. shippingAddress</a></li>
+  <li><a href="/3">3. Sale</a></li>
+  <li><a href="/4">4. reject Creditcards</a></li>
+  <li><a href="/5">5. reject shippingAddress</a></li>
+  </ul>
+
   <p> Teil 1: Einfacher Payment Request </p>
   <div class="produkt produkt_shadow" id="produkt">
     <h2>Beispielprodukt</h2>
