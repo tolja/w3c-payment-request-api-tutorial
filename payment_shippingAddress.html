@@ -1,0 +1,269 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>W3C Payment Request API Tutorial</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    * {
+      margin: 0;
+    }
+
+    html {
+      font-family: sans-serif;
+      line-height: 1.4;
+      padding: 2em;
+    }
+
+    body> :not(:first-child) {
+      margin-top: 1.5em;
+    }
+
+    h1,
+    h2 {
+      line-height: 1.15;
+    }
+
+    #express_selected {
+      display: none;
+    }
+
+    .produkt {
+      max-width: 13em;
+      padding: 1em;
+      background: #fff;
+    }
+
+    .produkt> :not(:first-child) {
+      margin-top: 0.85em;
+    }
+
+    .produkt_bought {
+      padding: 1em;
+      background: #fff;
+    }
+
+    .data_list {
+      max-width: 100%;
+    }
+
+    .produkt_bought> :not(:first-child) {
+      margin-top: 0.85em;
+    }
+
+    .produkt_bought {
+      display: none;
+    }
+
+    .produkt_shadow {
+      position: relative;
+      -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .produkt_shadow:after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      -webkit-box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+      bottom: 0px;
+      left: 10%;
+      right: 10%;
+      width: 80%;
+      height: 50%;
+      -moz-border-radius: 100%;
+      border-radius: 100%;
+    }
+
+    .produkt_meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .produkt_button {
+      background-color: #008CBA;
+      color: #fff;
+      padding: 0.25em 1em;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>W3C Payment Request API Tutorial</h1>
+  <p> Teil 2: Payment Request mit Lieferadresse </p>
+  <div class="produkt produkt_shadow" id="produkt">
+    <h2>Beispielprodukt</h2>
+    <p>Ich bin ein ganz tolles Produkt! Kauf mich!</p>
+    <div class="produkt_meta">
+      <strong class="produkt_preis">nur 49.99 €</strong>
+      <a href="#" id="produkt_button" class="produkt_button">Kaufen</a>
+    </div>
+  </div>
+
+  <div class="produkt_bought" id="produkt_bought">
+    <h2>Beispielprodukt gekauft!</h2>
+    <p>Sie haben das Beispielprodukt erfolgreich für 49,99 € <span id="express_selected">(+ 14,99 € Expressversand)</span> gekauft.</p>
+    <p>Ihre Daten:</p>
+    <div id="data_list"></div>
+
+  </div>
+
+  <script>
+    function handleProduktClick(e) {
+      e.preventDefault();
+
+      var creditCardPaymentMethod = {
+        supportedMethods: 'basic-card',
+      };
+
+      var supportedPaymentMethods = [creditCardPaymentMethod];
+
+      var paymentDetails = {
+        total: {
+          label: 'Gesamtsumme',
+          amount: {
+            currency: 'EUR',
+            value: '49.99'
+          }
+        },
+        displayItems: [{
+            label: 'Beispielprodukt',
+            amount: {
+              currency: 'EUR',
+              value: '49.99'
+            },
+          },
+          {
+            label: 'Standardversand',
+            amount: {
+              currency: 'EUR',
+              value: '0.00'
+            },
+          }
+
+        ],
+        shippingOptions: [{
+            id: 'standard',
+            label: 'Standardversand',
+            amount: {
+              currency: 'EUR',
+              value: '0.00'
+            },
+            selected: true
+          },
+          {
+            id: 'express',
+            label: 'Expressversand',
+            amount: {
+              currency: 'EUR',
+              value: '14.99'
+            },
+          },
+        ],
+      };
+
+      var options = {
+        requestShipping: true
+      };
+
+      var paymentRequest = new PaymentRequest(supportedPaymentMethods, paymentDetails, options);
+
+
+      paymentRequest.addEventListener('shippingoptionchange', function(evt) {
+        evt.updateWith(new Promise(function(resolve, reject) {
+          updateDetails(paymentDetails, paymentRequest.shippingOption, resolve, reject);
+        }));
+      });
+
+      function updateDetails(details, shippingOption, resolve, reject) {
+        if (shippingOption === 'standard') {
+          selectedShippingOption = details.shippingOptions[0];
+          otherShippingOption = details.shippingOptions[1];
+          details.total.amount.value = '49.99';
+        } else if (shippingOption === 'express') {
+          selectedShippingOption = details.shippingOptions[1];
+          otherShippingOption = details.shippingOptions[0];
+          details.total.amount.value = '64.98';
+
+        } else {
+          reject('Unbekannte Versandart \'' + shippingOption + '\'');
+          return;
+        }
+        selectedShippingOption.selected = true;
+        otherShippingOption.selected = false;
+        details.displayItems.splice(1, 2, selectedShippingOption);
+        resolve(details);
+      }
+
+      paymentRequest
+        .show()
+        .then(paymentResponse => {
+          return verifyPaymentWithBackend(paymentResponse).then((success) => {
+            if (success) {
+
+              showPaymentResponse(JSON.parse(success));
+              return paymentResponse.complete('success');
+
+            } else {
+              return paymentResponse.complete('fail');
+            }
+          });
+        })
+        .catch(err => {
+          console.log('Error:', err);
+        });
+
+    };
+
+    function showPaymentResponse(data) {
+
+      document.getElementById("produkt_button").innerHTML = 'Gekauft';
+      document.getElementById("produkt_button").style.backgroundColor = "#4CAF50";
+
+      document.getElementById("produkt_button").removeEventListener('click', handleProduktClick);
+
+      document.getElementById("produkt_bought").style.display = "block";
+
+      if (data.shippingOption == "express") {
+        document.getElementById("express_selected").style.display = "inline-block";
+      }
+
+      document.getElementById("data_list").innerHTML = JSON.stringify(data);
+
+    }
+
+    function verifyPaymentWithBackend(data) {
+      return new Promise((resolve, reject) => {
+
+        var xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.onload = function() {
+
+          if (xmlhttp.status == 201) {
+
+            resolve(xmlhttp.responseText);
+          } else {
+            resolve(false)
+          }
+        };
+
+
+        xmlhttp.open("POST", "/payment");
+        xmlhttp.setRequestHeader("Content-Type", "application/json");
+
+        xmlhttp.send(JSON.stringify(data));
+
+      });
+    }
+
+    document.getElementById("produkt_button").addEventListener('click', handleProduktClick)
+  </script>
+</body>
+
+</html>
