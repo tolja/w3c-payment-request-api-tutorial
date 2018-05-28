@@ -31,13 +31,13 @@ router.get('/2', (req, res) => {
 
 router.get('/3', (req, res) => {
 
-  res.sendFile(path.join(__dirname + '/payment_Sale.html'));
+  res.sendFile(path.join(__dirname + '/payment_sale.html'));
 
 })
 
 router.get('/4', (req, res) => {
 
-  res.sendFile(path.join(__dirname + '/payment_Tax.html'));
+  res.sendFile(path.join(__dirname + '/payment_tax.html'));
 
 })
 
