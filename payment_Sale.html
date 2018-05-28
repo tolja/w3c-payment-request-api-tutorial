@@ -85,6 +85,10 @@
       justify-content: space-between;
     }
 
+    .sale {
+      color: red;
+    }
+
     .produkt_button {
       background-color: #008CBA;
       color: #fff;
@@ -133,14 +137,14 @@
     <h2>Beispielprodukt</h2>
     <p>Ich bin ein ganz tolles Produkt! Kauf mich!</p>
     <div class="produkt_meta">
-      <strong class="produkt_preis">nur 49.99 €</strong>
+      <strong class="produkt_preis"><span class="sale">nur 35.00 €</span></strong>
       <a href="#" id="produkt_button" class="produkt_button">Kaufen</a>
     </div>
   </div>
 
   <div class="produkt_bought" id="produkt_bought">
     <h2>Beispielprodukt gekauft!</h2>
-    <p>Sie haben das Beispielprodukt erfolgreich für 49,99 € <span id="express_selected">(+ 14,99 € Expressversand)</span> gekauft.</p>
+    <p>Sie haben das Beispielprodukt erfolgreich für 35,00 € <span id="express_selected">(+ 14,99€ Expressversand)</span> gekauft.</p>
     <p>Ihre Daten:</p>
     <div id="data_list"></div>
 
