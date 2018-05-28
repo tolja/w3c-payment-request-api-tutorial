@@ -37,11 +37,17 @@ router.get('/3', (req, res) => {
 
 router.get('/4', (req, res) => {
 
-  res.sendFile(path.join(__dirname + '/payment_reject_creditcards.html'));
+  res.sendFile(path.join(__dirname + '/payment_Tax.html'));
 
 })
 
 router.get('/5', (req, res) => {
+
+  res.sendFile(path.join(__dirname + '/payment_reject_creditcards.html'));
+
+})
+
+router.get('/6', (req, res) => {
 
   res.sendFile(path.join(__dirname + '/payment_reject_shippingAddress.html'));
 
