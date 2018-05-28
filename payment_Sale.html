@@ -123,10 +123,11 @@
   <li><a href="/">1. Basic</a></li>
   <li><a href="/2">2. shippingAddress</a></li>
   <li><a href="/3">3. Sale</a></li>
-  <li><a href="/4">4. reject Creditcards</a></li>
-  <li><a href="/5">5. reject shippingAddress</a></li>
+  <li><a href="/4">4. Tax</a></li>
+  <li><a href="/5">5. reject Creditcards</a></li>
+  <li><a href="/6">6. reject shippingAddress</a></li>
   </ul>
-  
+
   <p> Teil 3: Payment Request mit Rabatten</p>
   <div class="produkt produkt_shadow" id="produkt">
     <h2>Beispielprodukt</h2>
@@ -204,7 +205,7 @@
   if (shippingOption === 'standard') {
     selectedShippingOption = details.shippingOptions[0];
     otherShippingOption = details.shippingOptions[1];
-    details.total.amount.value = '49.99';
+    details.total.amount.value = '35.00';
   } else if (shippingOption === 'express') {
     selectedShippingOption = details.shippingOptions[1];
     otherShippingOption = details.shippingOptions[0];
